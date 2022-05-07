@@ -92,18 +92,19 @@ class MainActivity : AppCompatActivity() {
 
             true
         }
-
-        reloadListView()
-    }
-    private fun reloadListView() {
         search_button.setOnClickListener  {
-            var search: String = search_edit_text.getText().toString();
-            var taskRealmResults: RealmResults<Task>? = null
-            if (search != "") {
-                taskRealmResults =mRealm.where(Task::class.java).equalTo("category", search).findAll() .sort("date", Sort.DESCENDING)
-            } else {
 
-                taskRealmResults =mRealm.where(Task::class.java).findAll().sort("date", Sort.DESCENDING)
+            val search: String = search_edit_text.getText().toString();
+
+            val taskRealmResults = mRealm.where(Task::class.java).equalTo("category", search).findAll()
+                .sort("date", Sort.DESCENDING)
+
+            if (search!="") {
+                reloadListView()
+
+            } else {
+                 mRealm.where(Task::class.java).equalTo("category",search ).findAll()
+                    .sort("date", Sort.DESCENDING)
             }
             // 上記の結果を、TaskListとしてセットする
             mTaskAdapter.mTaskList = mRealm.copyFromRealm(taskRealmResults)
@@ -113,12 +114,31 @@ class MainActivity : AppCompatActivity() {
 
             // 表示を更新するために、アダプターにデータが変更されたことを知らせる
             mTaskAdapter.notifyDataSetChanged()
-
         }
 
 
-}
-        override fun onDestroy() {
+            reloadListView()
+
+    }
+
+    private fun reloadListView() {
+
+            val taskRealmResults = mRealm.where(Task::class.java).findAll().sort("date", Sort.DESCENDING)
+
+            // 上記の結果を、TaskListとしてセットする
+            mTaskAdapter.mTaskList = mRealm.copyFromRealm(taskRealmResults)
+
+            // TaskのListView用のアダプタに渡す
+            listView1.adapter = mTaskAdapter
+
+            // 表示を更新するために、アダプターにデータが変更されたことを知らせる
+            mTaskAdapter.notifyDataSetChanged()
+
+
+    }
+
+
+            override fun onDestroy() {
             super.onDestroy()
 
             mRealm.close()
