@@ -92,18 +92,20 @@ class MainActivity : AppCompatActivity() {
 
             true
         }
-        search_button.setOnClickListener  {
 
-            val search: String = search_edit_text.getText().toString();
+        reloadListView()
 
-            val taskRealmResults = mRealm.where(Task::class.java).equalTo("category", search).findAll()
-                .sort("date", Sort.DESCENDING)
+        search_button.setOnClickListener {
 
-            if (search!="") {
-                reloadListView()
+            val search: String = search_edit_text.getText().toString()
 
+            var taskRealmResults = mRealm.where(Task::class.java).equalTo("category", search).findAll()
+                    .sort("date", Sort.DESCENDING)
+
+            if (search == "") {
+                taskRealmResults = mRealm.where(Task::class.java).findAll().sort("date", Sort.DESCENDING)
             } else {
-                 mRealm.where(Task::class.java).equalTo("category",search ).findAll()
+                taskRealmResults =mRealm.where(Task::class.java).equalTo("category", search).findAll()
                     .sort("date", Sort.DESCENDING)
             }
             // 上記の結果を、TaskListとしてセットする
@@ -114,15 +116,13 @@ class MainActivity : AppCompatActivity() {
 
             // 表示を更新するために、アダプターにデータが変更されたことを知らせる
             mTaskAdapter.notifyDataSetChanged()
+
         }
 
-
-            reloadListView()
-
-    }
+}
 
     private fun reloadListView() {
-
+            // Realmデータベースから、「全てのデータを取得して新しい日時順に並べた結果」を取得
             val taskRealmResults = mRealm.where(Task::class.java).findAll().sort("date", Sort.DESCENDING)
 
             // 上記の結果を、TaskListとしてセットする
